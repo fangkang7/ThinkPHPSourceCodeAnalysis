@@ -77,7 +77,7 @@ class Loader
     {
         // 注册系统自动加载
         spl_autoload_register($autoload ?: 'think\\Loader::autoload', true, true);
-
+        // 本地项目地址: D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\
         $rootPath = self::getRootPath();
 
         self::$composerPath = $rootPath . 'vendor' . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR;
@@ -88,6 +88,7 @@ class Loader
                 require self::$composerPath . 'autoload_static.php';
 
                 $declaredClass = get_declared_classes();
+                // Composer\Autoload\ComposerStaticInit30742487e00917c888d89ba216f165b9
                 $composerClass = array_pop($declaredClass);
 
                 foreach (['prefixLengthsPsr4', 'prefixDirsPsr4', 'fallbackDirsPsr4', 'prefixesPsr0', 'fallbackDirsPsr0', 'classMap', 'files'] as $attr) {
