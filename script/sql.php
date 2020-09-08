@@ -2,8 +2,10 @@
 
 class Kaka
 {
-	function say(){
-		echo '微信搜:PHP初学者必看';
-	}
-
+    function hello()
+    {
+        return "咔咔文章路线图，等你来补充";
+    }
 }
+
+print_r(get_declared_classes());

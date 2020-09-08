@@ -80,18 +80,20 @@ class Loader
         // 本地项目地址: D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\
         $rootPath = self::getRootPath();
 
+        // Composer安装路径: D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\vendor\composer\
         self::$composerPath = $rootPath . 'vendor' . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR;
 
         // Composer自动加载支持
         if (is_dir(self::$composerPath)) {
             if (is_file(self::$composerPath . 'autoload_static.php')) {
+                // 引入composer中vendor\composer\autoload_static.php文件
                 require self::$composerPath . 'autoload_static.php';
-
+                // 返回已经声明的所有类  然后数组返回
                 $declaredClass = get_declared_classes();
-                // Composer\Autoload\ComposerStaticInit30742487e00917c888d89ba216f165b9
+                // 获取数组最后一个值:Composer\Autoload\ComposerStaticInit30742487e00917c888d89ba216f165b9
                 $composerClass = array_pop($declaredClass);
-
                 foreach (['prefixLengthsPsr4', 'prefixDirsPsr4', 'fallbackDirsPsr4', 'prefixesPsr0', 'fallbackDirsPsr0', 'classMap', 'files'] as $attr) {
+                    // property_exists()  检测对象或者类是否具有该属性
                     if (property_exists($composerClass, $attr)) {
                         self::${$attr} = $composerClass::${$attr};
                     }
@@ -216,6 +218,14 @@ class Loader
     // 注册命名空间
     public static function addNamespace($namespace, $path = '')
     {
+        /* namespace的值
+        array(2) {
+        'think' =>
+        string(69) "D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\thinkphp\library\think"
+        'traits' =>
+        string(70) "D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\thinkphp\library\traits"
+        }
+         */
         if (is_array($namespace)) {
             foreach ($namespace as $prefix => $paths) {
                 self::addPsr4($prefix . '\\', rtrim($paths, DIRECTORY_SEPARATOR), true);
@@ -267,6 +277,10 @@ class Loader
     // 添加Psr4空间
     private static function addPsr4($prefix, $paths, $prepend = false)
     {
+        /**
+         * $prefix:think\
+         * $path:D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\thinkphp\library\think
+         */
         if (!$prefix) {
             // Register directories for the root namespace.
             if ($prepend) {
