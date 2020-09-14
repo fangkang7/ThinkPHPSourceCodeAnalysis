@@ -77,23 +77,20 @@ class Loader
     {
         // 注册系统自动加载
         spl_autoload_register($autoload ?: 'think\\Loader::autoload', true, true);
-        // 本地项目地址: D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\
+
         $rootPath = self::getRootPath();
 
-        // Composer安装路径: D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\vendor\composer\
         self::$composerPath = $rootPath . 'vendor' . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR;
 
         // Composer自动加载支持
         if (is_dir(self::$composerPath)) {
             if (is_file(self::$composerPath . 'autoload_static.php')) {
-                // 引入composer中vendor\composer\autoload_static.php文件
                 require self::$composerPath . 'autoload_static.php';
-                // 返回已经声明的所有类  然后数组返回
+
                 $declaredClass = get_declared_classes();
-                // 获取数组最后一个值:Composer\Autoload\ComposerStaticInit30742487e00917c888d89ba216f165b9
                 $composerClass = array_pop($declaredClass);
+
                 foreach (['prefixLengthsPsr4', 'prefixDirsPsr4', 'fallbackDirsPsr4', 'prefixesPsr0', 'fallbackDirsPsr0', 'classMap', 'files'] as $attr) {
-                    // property_exists()  检测对象或者类是否具有该属性
                     if (property_exists($composerClass, $attr)) {
                         self::${$attr} = $composerClass::${$attr};
                     }
@@ -110,6 +107,9 @@ class Loader
         ]);
 
         // 加载类库映射文件
+        // DIRECTORY_SEPARATOR : \
+        // $rootPath           : D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\
+
         if (is_file($rootPath . 'runtime' . DIRECTORY_SEPARATOR . 'classmap.php')) {
             self::addClassMap(__include_file($rootPath . 'runtime' . DIRECTORY_SEPARATOR . 'classmap.php'));
         }
@@ -218,7 +218,7 @@ class Loader
     // 注册命名空间
     public static function addNamespace($namespace, $path = '')
     {
-        /* namespace的值
+        /**
         array(2) {
         'think' =>
         string(69) "D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\thinkphp\library\think"
@@ -278,8 +278,8 @@ class Loader
     private static function addPsr4($prefix, $paths, $prepend = false)
     {
         /**
-         * $prefix:think\
-         * $path:D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\thinkphp\library\think
+         * $prefix : think\
+         * $path   : D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\thinkphp\library\think
          */
         if (!$prefix) {
             // Register directories for the root namespace.
@@ -296,13 +296,20 @@ class Loader
             }
         } elseif (!isset(self::$prefixDirsPsr4[$prefix])) {
             // Register directories for a new namespace.
+            // $length:6
             $length = strlen($prefix);
+            // 这里做一个简单的判断，看$prefix最后一个字符是否为\
             if ('\\' !== $prefix[$length - 1]) {
                 throw new \InvalidArgumentException("A non-empty PSR-4 prefix must end with a namespace separator.");
             }
-
+            /**
+             * $prefix[0] : t
+             * $prefix    : think\
+             * $length    : 6
+             */
             self::$prefixLengthsPsr4[$prefix[0]][$prefix] = $length;
             self::$prefixDirsPsr4[$prefix]                = (array) $paths;
+
         } elseif ($prepend) {
             // Prepend directories for an already registered namespace.
             self::$prefixDirsPsr4[$prefix] = array_merge(
@@ -321,6 +328,7 @@ class Loader
     // 注册自动加载类库目录
     public static function addAutoLoadDir($path)
     {
+        // $path : D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\extend
         self::$fallbackDirsPsr4[] = $path;
     }
 
