@@ -77,9 +77,9 @@ class Loader
     {
         // 注册系统自动加载
         spl_autoload_register($autoload ?: 'think\\Loader::autoload', true, true);
-
+        // 项目根目录：D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\
         $rootPath = self::getRootPath();
-
+        // composer路径：D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\vendor\composer\
         self::$composerPath = $rootPath . 'vendor' . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR;
 
         // Composer自动加载支持
@@ -109,25 +109,32 @@ class Loader
         // 加载类库映射文件
         // DIRECTORY_SEPARATOR : \
         // $rootPath           : D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\
-
         if (is_file($rootPath . 'runtime' . DIRECTORY_SEPARATOR . 'classmap.php')) {
             self::addClassMap(__include_file($rootPath . 'runtime' . DIRECTORY_SEPARATOR . 'classmap.php'));
         }
 
         // 自动加载extend目录
         self::addAutoLoadDir($rootPath . 'extend');
+        self::addAutoLoadDir($rootPath . 'kaka');
+
     }
 
     // 自动加载
     public static function autoload($class)
     {
+        // $class:think\Error
         if (isset(self::$classAlias[$class])) {
             return class_alias(self::$classAlias[$class], $class);
         }
 
+        //$file: D:/phpstudy_pro/WWW/ThinkPHPSourceCodeAnalysis/thinkphp/library//think/Error.php
         if ($file = self::findFile($class)) {
 
             // Win环境严格区分大小写
+            /**
+             * 只返回文件名 ：pathinfo($file, PATHINFO_FILENAME)
+             * 删除多余的 '/' ：readlink(linkpath)
+             */
             if (strpos(PHP_OS, 'WIN') !== false && pathinfo($file, PATHINFO_FILENAME) != pathinfo(realpath($file), PATHINFO_FILENAME)) {
                 return false;
             }
@@ -151,14 +158,28 @@ class Loader
         }
 
         // 查找 PSR-4
+        // $logicalPathPsr4:think\Error.php
         $logicalPathPsr4 = strtr($class, '\\', DIRECTORY_SEPARATOR) . '.php';
-
+        // $class : think\Error
+        // $first : t
         $first = $class[0];
+        /**
+         * self::$prefixLengthsPsr4[$first]
+         * array(3) {
+            'think\composer\' => int(15)
+            'think\' => int(6)
+            'traits\' => int(7)
+            }
+         */
         if (isset(self::$prefixLengthsPsr4[$first])) {
             foreach (self::$prefixLengthsPsr4[$first] as $prefix => $length) {
                 if (0 === strpos($class, $prefix)) {
+                    // $dir : D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\thinkphp\library\think
                     foreach (self::$prefixDirsPsr4[$prefix] as $dir) {
+                        // $length : 6
+                        // $logicalPathPsr4 : think\Error.php
                         if (is_file($file = $dir . DIRECTORY_SEPARATOR . substr($logicalPathPsr4, $length))) {
+                            // D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\thinkphp\library\think\Error.php
                             return $file;
                         }
                     }
@@ -169,6 +190,7 @@ class Loader
         // 查找 PSR-4 fallback dirs
         foreach (self::$fallbackDirsPsr4 as $dir) {
             if (is_file($file = $dir . DIRECTORY_SEPARATOR . $logicalPathPsr4)) {
+                // D:\phpstudy_pro\WWW\ThinkPHPSourceCodeAnalysis\kaka\test\Kaka.php
                 return $file;
             }
         }
@@ -194,7 +216,6 @@ class Loader
                 }
             }
         }
-
         // 查找 PSR-0 fallback dirs
         foreach (self::$fallbackDirsPsr0 as $dir) {
             if (is_file($file = $dir . DIRECTORY_SEPARATOR . $logicalPathPsr0)) {
